@@ -50,6 +50,7 @@ int main() {
 
 	//	XOR and print
 	auto xored = xorbuff(data.data(), key.data());
+
 	std::cout << "XORed data:\r\n";
 	print_hex(xored.data(), BLOCK_SIZE);
 	std::cout << "\r\n";
@@ -58,6 +59,7 @@ int main() {
 
 	//	XOR XORed data with the ket again to restore it
 	auto restored = xorbuff(xored.data(), key.data());
+
 	std::cout << "Restored data:\r\n";
 	print_hex(restored.data(), BLOCK_SIZE);
 	std::cout << "\r\n";
@@ -65,7 +67,7 @@ int main() {
 	std::cout << "\r\n\r\n";
 
 	//	report results
-	std::cout << ((restored == data) ? "Data matched" : "ERROR: Data didn't match");
+	std::cout << ((restored == data) ? "Data matched" : "ERROR: Data didn't match") << "\r\n";
 
 	return 0;
 }
