@@ -12,6 +12,8 @@
 #define TEST_OPS	(100000U)		//	by 100 000 ops
 
 
+//	totalxor XORes all the bytes inside the buffer to all the other bytes
+
 std::array<uint8_t, BLOCK_SZ> totalxor(const uint8_t* data) {
 
 	std::array<uint8_t, BLOCK_SZ> result;
