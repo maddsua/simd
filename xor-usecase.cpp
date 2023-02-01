@@ -57,7 +57,7 @@ int main() {
 	print_binary(xored.data(), BLOCK_SIZE);
 	std::cout << "\r\n\r\n";
 
-	//	XOR XORed data with the ket again to restore it
+	//	XOR XORed data with the key again to restore it
 	auto restored = xorbuff(xored.data(), key.data());
 
 	std::cout << "Restored data:\r\n";
