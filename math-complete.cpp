@@ -224,6 +224,9 @@ std::array<float, 16> dbm_8x8_tof_4x4() {
 		}
 	}
 
+	std::cout << "\r\n";
+	print_matrixD((double*)tmpmtrx, 8);
+
 	double tmpmtrx2[8][8];
 	memset(tmpmtrx2, 0, 64 * sizeof(double));
 	for (size_t m = 0; m < 4; m++) {
@@ -238,7 +241,44 @@ std::array<float, 16> dbm_8x8_tof_4x4() {
 	memset(tmpmtrx3, 0, 16 * sizeof(float));
 	for (size_t m = 0; m < 4; m++) {
 		for (size_t n = 0; n < 4; n++) {
-			tmpmtrx3[m][n] = tmpmtrx2[m][(n * 2)] / tmpmtrx2[m][(n * 2) + 1];
+			tmpmtrx3[m][n] = 1 / sqrt(pow(tmpmtrx2[m][(n * 2)], 2) / pow(tmpmtrx2[m][(n * 2) + 1], 2));
+		}
+	}
+
+	memcpy(result.data(), tmpmtrx3, 16 * sizeof(float));
+
+	return result;
+}
+std::array<float, 16> dbm_8x8_tof_4x4_sse() {
+
+	double tmpmtrx[8][8];
+	for (size_t m = 0; m < 8; m++) {
+		for (size_t n = 0; n < 4; n++) {
+			auto vect_rsqrt = _mm_sqrt_pd(_mm_loadu_pd(&matrix_dbl[m][2 * n]));
+			_mm_storeu_pd(&tmpmtrx[m][2 * n], vect_rsqrt);
+			//tmpmtrx[m][n] = 1 / sqrt(matrix_dbl[m][n]);
+			tmpmtrx[m][n] = 1 / tmpmtrx[m][n];
+		}
+	}
+
+	std::cout << "\r\n";
+	print_matrixD((double*)tmpmtrx, 8);
+
+	double tmpmtrx2[8][8];
+	memset(tmpmtrx2, 0, 64 * sizeof(double));
+	for (size_t m = 0; m < 4; m++) {
+		for (size_t n = 0; n < 8; n++) {
+			tmpmtrx2[m][n] = tmpmtrx[(m * 2)][n] * tmpmtrx[(m * 2) + 1][n];
+		}
+	}
+
+	std::array<float, 16> result;
+
+	float tmpmtrx3[4][4];
+	memset(tmpmtrx3, 0, 16 * sizeof(float));
+	for (size_t m = 0; m < 4; m++) {
+		for (size_t n = 0; n < 4; n++) {
+			tmpmtrx3[m][n] = 1 / sqrt(pow(tmpmtrx2[m][(n * 2)], 2) / pow(tmpmtrx2[m][(n * 2) + 1], 2));
 		}
 	}
 
@@ -259,9 +299,13 @@ int main() {
 	std::cout << flt_8x8_mlp_sse2() << "\r\n";
 	std::cout << flt_8x8_mlp_avx2() << "\r\n";
 
-	std::cout << "\r\n";
+	//std::cout << "\r\n";
 	auto matrix4x4 = dbm_8x8_tof_4x4();
-	print_matrixF(matrix4x4.data(), 4);
+	//print_matrixF(matrix4x4.data(), 4);
+
+	//std::cout << "\r\n";
+	auto matrix4x4_2 = dbm_8x8_tof_4x4_sse();
+	//print_matrixF(matrix4x4_2.data(), 4);
 
 
 
