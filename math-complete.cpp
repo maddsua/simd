@@ -79,7 +79,9 @@ double matrix_8x8_avg_sse2() {
 		vec_rows = _mm_add_epi32(vec_rows, vect_C);
 	}
 
-	int32_t* rows = (int32_t*)&vec_rows;
+	int32_t rows[4];
+	_mm_storeu_si128((__m128i*)rows, vec_rows);
+
 	int32_t result = 0;
 
 	for (size_t i = 0; i < 4; i++)
@@ -96,7 +98,9 @@ double matrix_8x8_avg_avx2() {
 		vec_rows = _mm256_add_epi32(vec_rows, matrix_A);
 	}
 
-	int32_t* rows = (int32_t*)&vec_rows;
+	int32_t rows[8];
+	_mm256_storeu_si256((__m256i*)rows, vec_rows);
+
 	int32_t result = 0;
 
 	for (size_t i = 0; i < 8; i++)
@@ -224,9 +228,6 @@ std::array<float, 16> dbm_8x8_tof_4x4() {
 		}
 	}
 
-	std::cout << "\r\n";
-	print_matrixD((double*)tmpmtrx, 8);
-
 	double tmpmtrx2[8][8];
 	memset(tmpmtrx2, 0, 64 * sizeof(double));
 	for (size_t m = 0; m < 4; m++) {
@@ -234,6 +235,9 @@ std::array<float, 16> dbm_8x8_tof_4x4() {
 			tmpmtrx2[m][n] = tmpmtrx[(m * 2)][n] * tmpmtrx[(m * 2) + 1][n];
 		}
 	}
+
+	std::cout << "\r\n";
+	print_matrixD((double*)tmpmtrx, 8);
 
 	std::array<float, 16> result;
 
@@ -260,9 +264,6 @@ std::array<float, 16> dbm_8x8_tof_4x4_sse() {
 		}
 	}
 
-	std::cout << "\r\n";
-	print_matrixD((double*)tmpmtrx, 8);
-
 	double tmpmtrx2[8][8];
 	memset(tmpmtrx2, 0, 64 * sizeof(double));
 	for (size_t m = 0; m < 4; m++) {
@@ -270,6 +271,9 @@ std::array<float, 16> dbm_8x8_tof_4x4_sse() {
 			tmpmtrx2[m][n] = tmpmtrx[(m * 2)][n] * tmpmtrx[(m * 2) + 1][n];
 		}
 	}
+
+	std::cout << "\r\n";
+	print_matrixD((double*)tmpmtrx, 8);
 
 	std::array<float, 16> result;
 
