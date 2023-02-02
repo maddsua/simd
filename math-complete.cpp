@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <memory.h>
+#include <math.h>
 
 
 #include <immintrin.h>
@@ -87,7 +88,7 @@ double matrix_8x8_avg_avx2() {
     ██      ██      ██    ██ ██   ██    ██        ██   ██  ██ ██  ██   ██ 
     ██      ███████  ██████  ██   ██    ██         █████  ██   ██  █████ 
 
-	Multiply two 8x8 matrix of floats, row by row, then average the resulting row
+	Multiply two 8x8 matrix of floats, row by row, reverse squre root out of it, then add all vector elements
 	
 */
 const float matrix_flt[8][8] = {
@@ -112,11 +113,14 @@ double flt_8x8_mlp() {
 		}
 	}
 
-	double result = 0;
+	for (size_t i = 0; i < 8; i++)
+		resrow[i] = 1 / sqrt(resrow[i]);
+	
+	double result = 1;
 	for (size_t i = 0; i < 8; i++)
 		result += resrow[i];
 	
-	return (result / 8);
+	return result;
 }
 
 double flt_8x8_mlp_sse2() {
@@ -130,14 +134,17 @@ double flt_8x8_mlp_sse2() {
 		vect_row_B = _mm_mul_ps(vect_row_B, _mm_loadu_ps(matrix_flt[i] + 4));
 	}
 
+	vect_row_A = _mm_rsqrt_ps(vect_row_A);
+	vect_row_B = _mm_rsqrt_ps(vect_row_B);
+
 	_mm_storeu_ps(resrow, vect_row_A);
 	_mm_storeu_ps(resrow + 4, vect_row_B);
 
-	double result = 0;
+	double result = 1;
 	for (size_t i = 0; i < 8; i++)
 		result += resrow[i];
 	
-	return (result / 8);
+	return result;
 }
 double flt_8x8_mlp_avx2() {
 	float resrow[8] = {1, 1, 1, 1, 1, 1, 1, 1};
@@ -147,13 +154,15 @@ double flt_8x8_mlp_avx2() {
 	for (size_t i = 0; i < 8; i++)
 		vect_row = _mm256_mul_ps(vect_row, _mm256_loadu_ps(matrix_flt[i]));
 
+	vect_row = _mm256_rsqrt_ps(vect_row);
+
 	_mm256_storeu_ps(resrow, vect_row);
 
-	double result = 0;
+	double result = 1;
 	for (size_t i = 0; i < 8; i++)
 		result += resrow[i];
 	
-	return (result / 8);
+	return result;
 }
 
 
