@@ -254,10 +254,9 @@ std::array<float, 16> dbm_8x8_tof_4x4_sse() {
 	double tmpmtrx[8][8];
 	for (size_t m = 0; m < 8; m++) {
 		for (size_t n = 0; n < 4; n++) {
-			auto vect_rsqrt = _mm_sqrt_pd(_mm_loadu_pd(&matrix_dbl[m][2 * n]));
-			_mm_storeu_pd(&tmpmtrx[m][2 * n], vect_rsqrt);
-			//tmpmtrx[m][n] = 1 / sqrt(matrix_dbl[m][n]);
-			tmpmtrx[m][n] = 1 / tmpmtrx[m][n];
+			auto vect_rsqrt = _mm_sqrt_pd(_mm_loadu_pd(&matrix_dbl[m][n * 2]));
+			auto divided = _mm_div_pd(_mm_set_pd1(1), vect_rsqrt);
+			_mm_storeu_pd(&tmpmtrx[m][n * 2], divided);
 		}
 	}
 
