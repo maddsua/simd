@@ -2,9 +2,34 @@
 #include <iomanip>
 #include <memory.h>
 #include <math.h>
-
+#include <array>
 
 #include <immintrin.h>
+
+
+void print_matrixF(float* matrix, size_t dim) {
+
+	const size_t fullSize = (dim * dim);
+
+	for (size_t m = 0; m < fullSize; m += dim) {
+		for (size_t n = 0; n < dim; n++) {
+			std:: cout << std::setw(10) << std::left << matrix[m + n] << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+void print_matrixD(double* matrix, size_t dim) {
+
+	const size_t fullSize = (dim * dim);
+
+	for (size_t m = 0; m < fullSize; m += dim) {
+		for (size_t n = 0; n < dim; n++) {
+			std:: cout << std::setw(10) << std::left << matrix[m + n] << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+
 
 
 /**
@@ -165,6 +190,64 @@ double flt_8x8_mlp_avx2() {
 	return result;
 }
 
+/**
+
+    ██████   ██████  ██    ██ ██████  ██      ███████     ██████  ███████ ███    ██
+    ██   ██ ██    ██ ██    ██ ██   ██ ██      ██          ██   ██ ██      ████   ██
+    ██   ██ ██    ██ ██    ██ ██████  ██      █████       ██████  █████   ██ ██  ██
+    ██   ██ ██    ██ ██    ██ ██   ██ ██      ██          ██      ██      ██  ██ ██
+    ██████   ██████   ██████  ██████  ███████ ███████     ██      ███████ ██   ████ ██ ██ ██
+
+	It's time to actually fck the crp out of your PC!
+
+	Ok I'm joking, this only run on single core, so the PC would be totally fine
+	
+*/
+
+const double matrix_dbl[8][8] = {
+	0.02494159, 0.71868752, 0.91990175, 0.34410689, 0.47312923, 0.30208912, 0.49589867, 0.02516413,
+	0.88883377, 0.06795215, 0.08575813, 0.22577430, 0.49062035, 0.86974825, 0.32800815, 0.12455937,
+	0.47718442, 0.57817785, 0.65302181, 0.64077491, 0.00368169, 0.84689647, 0.37906349, 0.25878278,
+	0.32721652, 0.64109163, 0.97700378, 0.98086717, 0.21519017, 0.14436138, 0.76528899, 0.61312114,
+	0.26716477, 0.76112935, 0.00952823, 0.51584315, 0.92180513, 0.37365493, 0.28754857, 0.62823112,
+	0.39187170, 0.37756994, 0.14195147, 0.83827942, 0.93483692, 0.54641417, 0.11881003, 0.76125618,
+	0.35885252, 0.30131080, 0.10792290, 0.87547434, 0.40315502, 0.56225633, 0.50602718, 0.99637334,
+	0.85471644, 0.74252133, 0.79062605, 0.26826468, 0.47558618, 0.92064569, 0.50718114, 0.82362572
+};
+
+std::array<float, 16> dbm_8x8_tof_4x4() {
+
+	double tmpmtrx[8][8];
+	for (size_t m = 0; m < 8; m++) {
+		for (size_t n = 0; n < 8; n++) {
+			tmpmtrx[m][n] = 1 / sqrt(matrix_dbl[m][n]);
+		}
+	}
+
+	double tmpmtrx2[8][8];
+	memset(tmpmtrx2, 0, 64 * sizeof(double));
+	for (size_t m = 0; m < 4; m++) {
+		for (size_t n = 0; n < 8; n++) {
+			tmpmtrx2[m][n] = tmpmtrx[(m * 2)][n] * tmpmtrx[(m * 2) + 1][n];
+		}
+	}
+
+	std::array<float, 16> result;
+
+	float tmpmtrx3[4][4];
+	memset(tmpmtrx3, 0, 16 * sizeof(float));
+	for (size_t m = 0; m < 4; m++) {
+		for (size_t n = 0; n < 4; n++) {
+			tmpmtrx3[m][n] = tmpmtrx2[m][(n * 2)] / tmpmtrx2[m][(n * 2) + 1];
+		}
+	}
+
+	memcpy(result.data(), tmpmtrx3, 16 * sizeof(float));
+
+	return result;
+}
+
+
 
 int main() {
 
@@ -175,6 +258,10 @@ int main() {
 	std::cout << flt_8x8_mlp() << "\r\n";
 	std::cout << flt_8x8_mlp_sse2() << "\r\n";
 	std::cout << flt_8x8_mlp_avx2() << "\r\n";
+
+	std::cout << "\r\n";
+	auto matrix4x4 = dbm_8x8_tof_4x4();
+	print_matrixF(matrix4x4.data(), 4);
 
 
 
