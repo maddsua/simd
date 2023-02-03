@@ -64,44 +64,52 @@ int main() {
 	const std::array<uint8_t, XOR_BLOCK_SIZE> dataBlock = {156,252,14,198,96,30,193,195,143,159,237,175,168,57,210,42,10,6,55,236,246,92,66,62,139,123,5,203,47,172,194,93};
 
 	time_t timer;
-	std::array<time_t, TEST_RUNS> test_ctrl;
-	std::array<time_t, TEST_RUNS> test_sse;
-	std::array<time_t, TEST_RUNS> test_avx2;
-
-	//	test without any simd
-	for (size_t m = 0; m < TEST_RUNS; m++) {
-		timer = timeGetTime();
-		for (size_t n = 0; n < TEST_OPS; n++) {
-			auto result = totalxor(dataBlock.data());
+	
+	//	XOR benchmark
+	std::array<time_t, TEST_RUNS> test1_ctrl;
+	std::array<time_t, TEST_RUNS> test1_sse;
+	std::array<time_t, TEST_RUNS> test1_avx2;
+	{
+		//	test without any simd
+		std::cout << "XOR test control run...";
+		for (size_t m = 0; m < TEST_RUNS; m++) {
+			timer = timeGetTime();
+			for (size_t n = 0; n < TEST_OPS; n++) {
+				auto result = totalxor(dataBlock.data());
+			}
+			test1_ctrl[m] = timeGetTime() - timer;
 		}
-		test_ctrl[m] = timeGetTime() - timer;
+		std::cout << " AVG: " << avgtime(test1_ctrl.data(), TEST_RUNS) << "ms/" << TEST_OPS <<"ops\r\n";
+
+
+		//	test with sse
+		std::cout << "XOR teset SSE run...";
+		for (size_t m = 0; m < TEST_RUNS; m++) {
+			timer = timeGetTime();
+			for (size_t n = 0; n < TEST_OPS; n++) {
+				auto result = totalxor_sse(dataBlock.data());
+			}
+			test1_sse[m] = timeGetTime() - timer;
+		}
+		std::cout << " AVG: " << avgtime(test1_sse.data(), TEST_RUNS) << "ms/" << TEST_OPS <<"ops\r\n";
+
+		//	test with avx2
+		std::cout << "XOR teset AVX2 run...";
+		for (size_t m = 0; m < TEST_RUNS; m++) {
+			timer = timeGetTime();
+			for (size_t n = 0; n < TEST_OPS; n++) {
+				auto result = totalxor_avx2(dataBlock.data());
+			}
+			test1_avx2[m] = timeGetTime() - timer;
+		}
+		std::cout << " AVG: " << avgtime(test1_avx2.data(), TEST_RUNS) << "ms/" << TEST_OPS <<"ops\r\n";
 	}
 
-	std::cout << "Control test ended. AVG: " << avgtime(test_ctrl.data(), TEST_RUNS) << "ms/block\r\n";
 
 
-	//	test with sse
-	for (size_t m = 0; m < TEST_RUNS; m++) {
-		timer = timeGetTime();
-		for (size_t n = 0; n < TEST_OPS; n++) {
-			auto result = totalxor_sse(dataBlock.data());
-		}
-		test_sse[m] = timeGetTime() - timer;
-	}
-
-	std::cout << "SSE test ended. AVG: " << avgtime(test_sse.data(), TEST_RUNS) << "ms/block\r\n";
 
 
-	//	test with avx2
-	for (size_t m = 0; m < TEST_RUNS; m++) {
-		timer = timeGetTime();
-		for (size_t n = 0; n < TEST_OPS; n++) {
-			auto result = totalxor_avx2(dataBlock.data());
-		}
-		test_avx2[m] = timeGetTime() - timer;
-	}
 
-	std::cout << "AVX2 test ended. AVG: " << avgtime(test_avx2.data(), TEST_RUNS) << "ms/block\r\n";
 
 	//	save test data
 	std::cout << "\r\nWriting test data to .csv...\r\n";
@@ -111,7 +119,7 @@ int main() {
 
 	output << "Control,SSE,AVX2,Unit" << "\n";
 	for (size_t i = 0; i < TEST_RUNS; i++){
-		output << test_ctrl[i] << "," << test_sse[i] << "," << test_avx2[i] << ",ms/" << TEST_OPS << " ops\n";
+		output << test1_ctrl[i] << "," << test1_sse[i] << "," << test1_avx2[i] << ",ms/" << TEST_OPS << " ops\n";
 	}
 
 	output.close();
