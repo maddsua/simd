@@ -1,6 +1,10 @@
 # SSE2+ and AVX2 fun time
 Many developers avoid using SIMD intrinsics, so I'm gonna make some fun tests here
 
+The reason why SIMD is faster is that you perform an operation on multiple data at once:
+
+<img src="scalar-vectorial.svg"/>
+
 ## Math test
 
 Note: This test is accurate for comparing a single type of operation to it's SIMD and non-SIMD version.
