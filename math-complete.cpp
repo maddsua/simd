@@ -250,7 +250,7 @@ std::array <float, 16> d8_f4() {
 
 	return result;
 }
-std::array <float, 16> d8_f4_sse() {
+std::array <float, 16> d8_f4_sse2() {
 
 	double tmpmtrx[8][8];
 	for (size_t m = 0; m < 8; m++) {
@@ -266,12 +266,15 @@ std::array <float, 16> d8_f4_sse() {
 	double tmpmtrx2_B[8];
 	
 	for (size_t m = 0; m < 4; m++) {
+
 		const size_t _2m = m * 2;
+		
 		//	pack inputs to two arrays
 		for (size_t n = 0; n < 8; n++) {
 			tmpmtrx2_A[n] = tmpmtrx[_2m][n];
 			tmpmtrx2_B[n] = tmpmtrx[_2m + 1][n];
 		}
+
 		//	multiply the input doubles
 		for (size_t n = 0; n < 4; n++) {
 			const size_t _2n = n * 2;
@@ -289,12 +292,14 @@ std::array <float, 16> d8_f4_sse() {
 	double tmpmtrx3_B[4];
 
 	for (size_t m = 0; m < 4; m++) {
+
 		//	pack inputs again
 		for (size_t n = 0; n < 4; n++) {
 			const size_t _2n = 2 * n;
 			tmpmtrx3_A[n] = tmpmtrx2[m][_2n];
 			tmpmtrx3_B[n] = tmpmtrx2[m][_2n + 1];
 		}
+
 		//	perform math on vectors		
 		for (size_t n = 0; n < 2; n++) {
 			const size_t _2n = n * 2;
@@ -318,7 +323,72 @@ std::array <float, 16> d8_f4_sse() {
 
 	return result;
 }
+std::array <float, 16> d8_f4_avx2() {
 
+	double tmpmtrx[8][8];
+	for (size_t m = 0; m < 8; m++) {
+		for (size_t n = 0; n < 2; n++) {
+			auto vect_rsqrt = _mm256_sqrt_pd(_mm256_loadu_pd(&matrix_dbl[m][n * 4]));
+			auto divided = _mm256_div_pd(_mm256_set_pd(1, 1, 1, 1), vect_rsqrt);
+			_mm256_storeu_pd(&tmpmtrx[m][n * 4], divided);
+		}
+	}
+
+	double tmpmtrx2[8][8];	
+	double tmpmtrx2_A[8];
+	double tmpmtrx2_B[8];
+	
+	for (size_t m = 0; m < 4; m++) {
+		const size_t _2m = m * 2;
+		//	pack inputs to two arrays
+		for (size_t n = 0; n < 8; n++) {
+			tmpmtrx2_A[n] = tmpmtrx[_2m][n];
+			tmpmtrx2_B[n] = tmpmtrx[_2m + 1][n];
+		}
+		//	multiply the input doubles
+		for (size_t n = 0; n < 2; n++) {
+			const size_t _4n = n * 4;
+			auto vect_A = _mm256_loadu_pd(&tmpmtrx2_A[_4n]);
+			auto vect_B = _mm256_loadu_pd(&tmpmtrx2_B[_4n]);
+			auto multiplied = _mm256_mul_pd(vect_A, vect_B);
+			_mm256_storeu_pd(&tmpmtrx2[m][_4n], multiplied);
+		}
+	}
+
+	std::array <float, 16> result;
+
+	float tmpmtrx3[4][4];
+	double tmpmtrx3_A[4];
+	double tmpmtrx3_B[4];
+
+	for (size_t m = 0; m < 4; m++) {
+		
+		//	pack inputs again
+		for (size_t n = 0; n < 4; n++) {
+			const size_t _2n = 2 * n;
+			tmpmtrx3_A[n] = tmpmtrx2[m][_2n];
+			tmpmtrx3_B[n] = tmpmtrx2[m][_2n + 1];
+		}
+
+		//	perform math on vectors
+		auto vect_A = _mm256_loadu_pd(tmpmtrx3_A);
+		auto vect_B = _mm256_loadu_pd(tmpmtrx3_B);
+
+		auto vect_pow_A = _mm256_mul_pd(vect_A, vect_A);
+		auto vect_pow_B = _mm256_mul_pd(vect_B, vect_B);
+
+		auto vect_divd = _mm256_div_pd(vect_pow_A, vect_pow_B);
+		auto vect_sqrt = _mm256_sqrt_pd(vect_divd);
+
+		auto vect_invsqrt = _mm256_div_pd(_mm256_set_pd(1, 1, 1, 1), vect_sqrt);
+
+		_mm_storeu_ps(tmpmtrx3[m], _mm256_cvtpd_ps(vect_invsqrt));
+	}
+
+	memcpy(result.data(), tmpmtrx3, 16 * sizeof(float));
+
+	return result;
+}
 
 
 int main() {
@@ -336,8 +406,12 @@ int main() {
 	print_matrixF(matrix4x4.data(), 4);
 
 	std::cout << "\r\n";
-	auto matrix4x4_2 = d8_f4_sse();
+	auto matrix4x4_2 = d8_f4_sse2();
 	print_matrixF(matrix4x4_2.data(), 4);
+
+	std::cout << "\r\n";
+	auto matrix4x4_3 = d8_f4_avx2();
+	print_matrixF(matrix4x4_3.data(), 4);
 
 
 
