@@ -246,9 +246,6 @@ std::array <float, 16> d8_f4() {
 		}
 	}
 
-	std::cout << "\r\n";
-	print_matrixF((float*)tmpmtrx3, 4);
-
 	memcpy(result.data(), tmpmtrx3, 16 * sizeof(float));
 
 	return result;
@@ -287,7 +284,7 @@ std::array <float, 16> d8_f4_sse() {
 
 	std::array <float, 16> result;
 
-	double tmpmtrx3[4][4];
+	float tmpmtrx3[4][4];
 	double tmpmtrx3_A[4];
 	double tmpmtrx3_B[4];
 
@@ -297,33 +294,25 @@ std::array <float, 16> d8_f4_sse() {
 			const size_t _2n = 2 * n;
 			tmpmtrx3_A[n] = tmpmtrx2[m][_2n];
 			tmpmtrx3_B[n] = tmpmtrx2[m][_2n + 1];
-			//tmpmtrx3[m][n] = 1 / (sqrt(pow(tmpmtrx2[m][_2n], 2) / pow(tmpmtrx2[m][_2n + 1], 2)));
 		}
-		//	perform math on vectors
-
-		/*for (size_t i = 0; i < 4; i++) {
-			tmpmtrx3[m][i] = 1 / (sqrt(pow(tmpmtrx3_A[i], 2) / pow(tmpmtrx3_B[i], 2)));
-		}*/
-		
+		//	perform math on vectors		
 		for (size_t n = 0; n < 2; n++) {
 			const size_t _2n = n * 2;
 			
 			auto vect_A = _mm_loadu_pd(&tmpmtrx3_A[_2n]);
 			auto vect_B = _mm_loadu_pd(&tmpmtrx3_B[_2n]);
 
-			auto vect_SQPW = _mm_sqrt_pd(_mm_mul_pd(vect_A, vect_A));
-			auto vect_PW = _mm_mul_pd(vect_B, vect_B);
+			auto vect_pow_A = _mm_mul_pd(vect_A, vect_A);
+			auto vect_pow_B = _mm_mul_pd(vect_B, vect_B);
 
-			auto vect_div = _mm_div_pd(vect_SQPW, vect_PW);
-			vect_div = _mm_div_pd(_mm_set_pd1(1), vect_div);
+			auto vect_divd = _mm_div_pd(vect_pow_A, vect_pow_B);
+			auto vect_sqrt = _mm_sqrt_pd(vect_divd);
 
-			//auto fltres = _mm_cvtpd_ps(vect_div);
-			_mm_storeu_pd(&tmpmtrx3[m][_2n], vect_div);
+			auto vect_invsqrt = _mm_div_pd(_mm_set_pd1(1), vect_sqrt);
+
+			_mm_storeu_ps(&tmpmtrx3[m][_2n], _mm_cvtpd_ps(vect_invsqrt));
 		}
 	}
-
-	std::cout << "\r\n";
-	print_matrixD((double*)tmpmtrx3, 4);
 
 	memcpy(result.data(), tmpmtrx3, 16 * sizeof(float));
 
@@ -342,13 +331,13 @@ int main() {
 	std::cout << flt_8x8_mlp_sse2() << "\r\n";
 	std::cout << flt_8x8_mlp_avx2() << "\r\n";
 
-	//std::cout << "\r\n";
+	std::cout << "\r\n";
 	auto matrix4x4 = d8_f4();
-	//print_matrixF(matrix4x4.data(), 4);
+	print_matrixF(matrix4x4.data(), 4);
 
-	//std::cout << "\r\n";
+	std::cout << "\r\n";
 	auto matrix4x4_2 = d8_f4_sse();
-	//print_matrixF(matrix4x4_2.data(), 4);
+	print_matrixF(matrix4x4_2.data(), 4);
 
 
 
