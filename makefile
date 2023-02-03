@@ -3,7 +3,7 @@ FLAGS	=	-std=c++20 -msse2 -mavx2
 LIBS	=	-lwinmm
 
 
-.PHONY: all-before all-after clean clean-custom xor-benchmark xor-usecase hash-usecase math-complete
+.PHONY: all-before all-after clean clean-custom xor-benchmark xor-usecase hash-usecase arithmetics
 all: all-before xor-benchmark all-after
 
 clean:
@@ -28,5 +28,5 @@ hash-usecase.o: hash-usecase.cpp
 hash-usecase: hash-function.o hash-usecase.o
 	g++ hash-usecase.o hash-function.o -o hash-usecase $(FLAGS)
 
-math-complete:
-	g++ math-complete.cpp -o math-complete $(FLAGS)
+arithmetics:
+	g++ arithmetics.cpp -o arithmetics $(LIBS) $(FLAGS)
