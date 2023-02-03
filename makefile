@@ -30,3 +30,6 @@ hash-usecase: hash-function.o hash-usecase.o
 
 arithmetics:
 	g++ arithmetics.cpp -o arithmetics $(LIBS) $(FLAGS)
+
+bitwise:
+	g++ bitwise.cpp -o bitwise $(LIBS) $(FLAGS)
