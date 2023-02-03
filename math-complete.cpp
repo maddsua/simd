@@ -219,7 +219,7 @@ const double matrix_dbl[8][8] = {
 	0.85471644, 0.74252133, 0.79062605, 0.26826468, 0.47558618, 0.92064569, 0.50718114, 0.82362572
 };
 
-std::array<float, 16> d8_f4() {
+std::array <float, 16> d8_f4() {
 
 	double tmpmtrx[8][8];
 	for (size_t m = 0; m < 8; m++) {
@@ -236,13 +236,13 @@ std::array<float, 16> d8_f4() {
 		}
 	}
 
-	std::array<float, 16> result;
+	std::array <float, 16> result;
 
 	float tmpmtrx3[4][4];
 	memset(tmpmtrx3, 0, 16 * sizeof(float));
 	for (size_t m = 0; m < 4; m++) {
 		for (size_t n = 0; n < 4; n++) {
-			tmpmtrx3[m][n] = 1 / sqrt(pow(tmpmtrx2[m][(n * 2)], 2) / pow(tmpmtrx2[m][(n * 2) + 1], 2));
+			tmpmtrx3[m][n] = 1 / (sqrt(pow(tmpmtrx2[m][(n * 2)], 2) / pow(tmpmtrx2[m][(n * 2) + 1], 2)));
 		}
 	}
 
@@ -253,7 +253,7 @@ std::array<float, 16> d8_f4() {
 
 	return result;
 }
-std::array<float, 16> d8_f4_sse() {
+std::array <float, 16> d8_f4_sse() {
 
 	double tmpmtrx[8][8];
 	for (size_t m = 0; m < 8; m++) {
@@ -264,9 +264,7 @@ std::array<float, 16> d8_f4_sse() {
 		}
 	}
 
-	double tmpmtrx2[8][8];
-	memset(tmpmtrx2, 0, 64 * sizeof(double));
-	
+	double tmpmtrx2[8][8];	
 	double tmpmtrx2_A[8];
 	double tmpmtrx2_B[8];
 	
@@ -277,7 +275,7 @@ std::array<float, 16> d8_f4_sse() {
 			tmpmtrx2_A[n] = tmpmtrx[_2m][n];
 			tmpmtrx2_B[n] = tmpmtrx[_2m + 1][n];
 		}
-		//	multily the input doubles
+		//	multiply the input doubles
 		for (size_t n = 0; n < 4; n++) {
 			const size_t _2n = n * 2;
 			auto vect_A = _mm_loadu_pd(&tmpmtrx2_A[_2n]);
@@ -287,18 +285,45 @@ std::array<float, 16> d8_f4_sse() {
 		}
 	}
 
-	std::array<float, 16> result;
+	std::array <float, 16> result;
 
-	float tmpmtrx3[4][4];
-	memset(tmpmtrx3, 0, 16 * sizeof(float));
+	double tmpmtrx3[4][4];
+	double tmpmtrx3_A[4];
+	double tmpmtrx3_B[4];
+
 	for (size_t m = 0; m < 4; m++) {
+		//	pack inputs again
 		for (size_t n = 0; n < 4; n++) {
-			tmpmtrx3[m][n] = 1 / sqrt(pow(tmpmtrx2[m][(n * 2)], 2) / pow(tmpmtrx2[m][(n * 2) + 1], 2));
+			const size_t _2n = 2 * n;
+			tmpmtrx3_A[n] = tmpmtrx2[m][_2n];
+			tmpmtrx3_B[n] = tmpmtrx2[m][_2n + 1];
+			//tmpmtrx3[m][n] = 1 / (sqrt(pow(tmpmtrx2[m][_2n], 2) / pow(tmpmtrx2[m][_2n + 1], 2)));
+		}
+		//	perform math on vectors
+
+		/*for (size_t i = 0; i < 4; i++) {
+			tmpmtrx3[m][i] = 1 / (sqrt(pow(tmpmtrx3_A[i], 2) / pow(tmpmtrx3_B[i], 2)));
+		}*/
+		
+		for (size_t n = 0; n < 2; n++) {
+			const size_t _2n = n * 2;
+			
+			auto vect_A = _mm_loadu_pd(&tmpmtrx3_A[_2n]);
+			auto vect_B = _mm_loadu_pd(&tmpmtrx3_B[_2n]);
+
+			auto vect_SQPW = _mm_sqrt_pd(_mm_mul_pd(vect_A, vect_A));
+			auto vect_PW = _mm_mul_pd(vect_B, vect_B);
+
+			auto vect_div = _mm_div_pd(vect_SQPW, vect_PW);
+			vect_div = _mm_div_pd(_mm_set_pd1(1), vect_div);
+
+			//auto fltres = _mm_cvtpd_ps(vect_div);
+			_mm_storeu_pd(&tmpmtrx3[m][_2n], vect_div);
 		}
 	}
 
 	std::cout << "\r\n";
-	print_matrixF((float*)tmpmtrx3, 4);
+	print_matrixD((double*)tmpmtrx3, 4);
 
 	memcpy(result.data(), tmpmtrx3, 16 * sizeof(float));
 
