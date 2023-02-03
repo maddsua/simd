@@ -523,12 +523,10 @@ void invalidResult() {
 	exit(1);
 }
 
-
-
 int main() {
 
 	std::cout << "\r\n\r\nThis demo is gonna performs some arithmetic computations along with benchmarks\r\n";
-	std::cout << "Running " << TEST_OPS_MATH << " instances of each operation...\r\n";
+	std::cout << "Running " << TEST_OPS << " instances of each operation...\r\n";
 
 	auto timer = timeGetTime();
 
@@ -536,9 +534,9 @@ int main() {
 
 	test1:
 	//	average of 8x8 32-bit int matrix
-	std::array<time_t, TEST_RUNS_MATH> test1_ctrl;
-	std::array<time_t, TEST_RUNS_MATH> test1_sse2;
-	std::array<time_t, TEST_RUNS_MATH> test1_avx2;
+	std::array<time_t, TEST_RUNS> test1_ctrl;
+	std::array<time_t, TEST_RUNS> test1_sse2;
+	std::array<time_t, TEST_RUNS> test1_avx2;
 	{
 		std::cout << "\r\n\r\nTest 1. Average value of 8x8 32-bit int matrix...\r\n";
 
@@ -546,50 +544,50 @@ int main() {
 		auto refResult = matrix_8x8_avg();
 		std::cout << "Expected computation result: " << refResult << "\r\n\r\n";
 		std::cout << "Control run... ";
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH; i++) {
+			for (size_t i = 0; i < TEST_OPS; i++) {
 				auto opResult = matrix_8x8_avg();
 				if (opResult != refResult) invalidResult();
 			}
 			test1_ctrl[r] = timeGetTime() - timer;
 		}
 
-		std::cout << "AVG " << avgtime(test1_ctrl.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH << "ops\r\n";
+		std::cout << "AVG " << avgtime(test1_ctrl.data(), TEST_RUNS) << "ms/" << TEST_OPS << "ops\r\n";
 
 		//	sse2
 		std::cout << "SSE2 run... ";
 		refResult = matrix_8x8_avg_sse2();
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH; i++) {
+			for (size_t i = 0; i < TEST_OPS; i++) {
 				auto opResult = matrix_8x8_avg_sse2();
 				if (opResult != refResult) invalidResult();
 			}
 			test1_sse2[r] = timeGetTime() - timer;
 		}
-		std::cout << "AVG " << avgtime(test1_sse2.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH << "ops\r\n";
+		std::cout << "AVG " << avgtime(test1_sse2.data(), TEST_RUNS) << "ms/" << TEST_OPS << "ops\r\n";
 
 		//	avx2
 		std::cout << "AVX run... ";
 		refResult = matrix_8x8_avg_avx2();
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH; i++) {
+			for (size_t i = 0; i < TEST_OPS; i++) {
 				auto opResult = matrix_8x8_avg_avx2();
 				if (opResult != refResult) invalidResult();
 			}
 			test1_avx2[r] = timeGetTime() - timer;
 		}
 
-		std::cout << "AVG " << avgtime(test1_avx2.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH << "ops\r\n";
+		std::cout << "AVG " << avgtime(test1_avx2.data(), TEST_RUNS) << "ms/" << TEST_OPS << "ops\r\n";
 	}
 
 	test2:
 	//	double 8x8 to float 4x4 matrix transform
-	std::array<time_t, TEST_RUNS_MATH> test2_ctrl;
-	std::array<time_t, TEST_RUNS_MATH> test2_sse2;
-	std::array<time_t, TEST_RUNS_MATH> test2_avx2;
+	std::array<time_t, TEST_RUNS> test2_ctrl;
+	std::array<time_t, TEST_RUNS> test2_sse2;
+	std::array<time_t, TEST_RUNS> test2_avx2;
 	{
 		std::cout << "\r\n\r\nTest 2. Float 8x8 to single float matrix multiplication...\r\n";
 
@@ -597,51 +595,51 @@ int main() {
 		auto refResult = flt_8x8_mlp();
 		std::cout << "Expected computation result: " << refResult << "\r\n\r\n";
 		std::cout << "Control run... ";
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH; i++) {
+			for (size_t i = 0; i < TEST_OPS; i++) {
 				auto opResult = flt_8x8_mlp();
 				if (opResult != refResult) invalidResult();
 			}
 			test2_ctrl[r] = timeGetTime() - timer;
 		}
 
-		std::cout << "AVG " << avgtime(test2_ctrl.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH << "ops\r\n";
+		std::cout << "AVG " << avgtime(test2_ctrl.data(), TEST_RUNS) << "ms/" << TEST_OPS << "ops\r\n";
 
 		//	sse2
 		std::cout << "SSE2 run... ";
 		refResult = flt_8x8_mlp_sse2();
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH; i++) {
+			for (size_t i = 0; i < TEST_OPS; i++) {
 				auto opResult = flt_8x8_mlp_sse2();
 				if (opResult != refResult) invalidResult();
 			}
 			test2_sse2[r] = timeGetTime() - timer;
 		}
-		std::cout << "AVG " << avgtime(test2_sse2.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH << "ops\r\n";
+		std::cout << "AVG " << avgtime(test2_sse2.data(), TEST_RUNS) << "ms/" << TEST_OPS << "ops\r\n";
 
 		//	avx2
 		std::cout << "AVX run... ";
 		refResult = flt_8x8_mlp_avx2();
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH; i++) {
+			for (size_t i = 0; i < TEST_OPS; i++) {
 				auto opResult = flt_8x8_mlp_avx2();
 				if (opResult != refResult) invalidResult();
 			}
 			test2_avx2[r] = timeGetTime() - timer;
 		}
 
-		std::cout << "AVG " << avgtime(test2_avx2.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH << "ops\r\n";
+		std::cout << "AVG " << avgtime(test2_avx2.data(), TEST_RUNS) << "ms/" << TEST_OPS << "ops\r\n";
 	}
 
 	test3:
 	//	double 8x8 to float 4x4 matrix transform
 	//	this is a computationaly intensive test, number of samples is lowered by a factor of 10
-	std::array<time_t, TEST_RUNS_MATH> test3_ctrl;
-	std::array<time_t, TEST_RUNS_MATH> test3_sse2;
-	std::array<time_t, TEST_RUNS_MATH> test3_avx2;
+	std::array<time_t, TEST_RUNS> test3_ctrl;
+	std::array<time_t, TEST_RUNS> test3_sse2;
+	std::array<time_t, TEST_RUNS> test3_avx2;
 	{
 		std::cout << "\r\n\r\nTest 3. Double 8x8 to float 4x4 matrix transform...\r\n";
 
@@ -653,51 +651,51 @@ int main() {
 		std::cout << "\r\n\r\n";
 
 		std::cout << "Control run... ";
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH_RED; i++) {
+			for (size_t i = 0; i < TEST_OPS_RED; i++) {
 				auto opResult = d8_f4();
 				if (opResult != refResult) invalidResult();
 			}
 			test3_ctrl[r] = timeGetTime() - timer;
 		}
 
-		std::cout << "AVG " << avgtime(test3_ctrl.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH_RED << "ops\r\n";
+		std::cout << "AVG " << avgtime(test3_ctrl.data(), TEST_RUNS) << "ms/" << TEST_OPS_RED << "ops\r\n";
 
 		//	sse2
 		std::cout << "SSE2 run... ";
 		refResult = d8_f4_sse2();
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH_RED; i++) {
+			for (size_t i = 0; i < TEST_OPS_RED; i++) {
 				auto opResult = d8_f4_sse2();
 				if (opResult != refResult) invalidResult();
 			}
 			test3_sse2[r] = timeGetTime() - timer;
 		}
-		std::cout << "AVG " << avgtime(test3_sse2.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH_RED << "ops\r\n";
+		std::cout << "AVG " << avgtime(test3_sse2.data(), TEST_RUNS) << "ms/" << TEST_OPS_RED << "ops\r\n";
 
 		//	avx2
 		std::cout << "AVX run... ";
 		refResult = d8_f4_avx2();
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH_RED; i++) {
+			for (size_t i = 0; i < TEST_OPS_RED; i++) {
 				auto opResult = d8_f4_avx2();
 				if (opResult != refResult) invalidResult();
 			}
 			test3_avx2[r] = timeGetTime() - timer;
 		}
 
-		std::cout << "AVG " << avgtime(test3_avx2.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH_RED << "ops\r\n";
+		std::cout << "AVG " << avgtime(test3_avx2.data(), TEST_RUNS) << "ms/" << TEST_OPS_RED << "ops\r\n";
 	}
 
 	test4:
 	//	bitg int test
 	//	irrelevant one due to weak vectorization
-	std::array<time_t, TEST_RUNS_MATH> test4_ctrl;
-	std::array<time_t, TEST_RUNS_MATH> test4_sse2;
-	std::array<time_t, TEST_RUNS_MATH> test4_avx2;
+	std::array<time_t, TEST_RUNS> test4_ctrl;
+	std::array<time_t, TEST_RUNS> test4_sse2;
+	std::array<time_t, TEST_RUNS> test4_avx2;
 	{
 		std::cout << "\r\n\r\nTest 4. Just checking how fast you can crunch the 64-bit integers...\r\n";
 
@@ -705,43 +703,43 @@ int main() {
 		auto refResult = bigint_calc();
 		std::cout << "Expected computation result: " << refResult << "\r\n\r\n";
 		std::cout << "Control run... ";
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH; i++) {
+			for (size_t i = 0; i < TEST_OPS; i++) {
 				auto opResult = bigint_calc();
 				if (opResult != refResult) invalidResult();
 			}
 			test4_ctrl[r] = timeGetTime() - timer;
 		}
 
-		std::cout << "AVG " << avgtime(test4_ctrl.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH << "ops\r\n";
+		std::cout << "AVG " << avgtime(test4_ctrl.data(), TEST_RUNS) << "ms/" << TEST_OPS << "ops\r\n";
 
 		//	sse2
 		std::cout << "SSE2 run... ";
 		refResult = bigint_calc_sse2();
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH; i++) {
+			for (size_t i = 0; i < TEST_OPS; i++) {
 				auto opResult = bigint_calc_sse2();
 				if (opResult != refResult) invalidResult();
 			}
 			test4_sse2[r] = timeGetTime() - timer;
 		}
-		std::cout << "AVG " << avgtime(test4_sse2.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH << "ops\r\n";
+		std::cout << "AVG " << avgtime(test4_sse2.data(), TEST_RUNS) << "ms/" << TEST_OPS << "ops\r\n";
 
 		//	avx2
 		std::cout << "AVX run... ";
 		refResult = bigint_calc_avx2();
-		for (size_t r = 0; r < TEST_RUNS_MATH; r++) {
+		for (size_t r = 0; r < TEST_RUNS; r++) {
 			timer = timeGetTime();
-			for (size_t i = 0; i < TEST_OPS_MATH; i++) {
+			for (size_t i = 0; i < TEST_OPS; i++) {
 				auto opResult = bigint_calc_avx2();
 				if (opResult != refResult) invalidResult();
 			}
 			test4_avx2[r] = timeGetTime() - timer;
 		}
 
-		std::cout << "AVG " << avgtime(test4_avx2.data(), TEST_RUNS_MATH) << "ms/" << TEST_OPS_MATH << "ops\r\n";
+		std::cout << "AVG " << avgtime(test4_avx2.data(), TEST_RUNS) << "ms/" << TEST_OPS << "ops\r\n";
 	}
 
 	//	save test data
@@ -755,12 +753,12 @@ int main() {
 			<< "int64-Control,int64-SSE,int64-AVX2,"
 			<< "Unit (ms/n ops)\n";
 
-	for (size_t i = 0; i < TEST_RUNS_MATH; i++){
+	for (size_t i = 0; i < TEST_RUNS; i++){
 		output << test1_ctrl[i] << "," << test1_sse2[i] << "," << test1_avx2[i] << ","
 				<< test2_ctrl[i] << "," << test2_sse2[i] << "," << test2_avx2[i] << ","
 				<< test3_ctrl[i] << "," << test3_sse2[i] << "," << test3_avx2[i] << ","
 				<< test4_ctrl[i] << "," << test4_sse2[i] << "," << test4_avx2[i]  << ","
-				<< TEST_OPS_MATH << "\n";
+				<< TEST_OPS << "\n";
 	}
 
 	output.close();
