@@ -755,7 +755,7 @@ int main() {
 			<< "int64-Control,int64-SSE,int64-AVX2,"
 			<< "Unit (ms/n ops)\n";
 
-	for (size_t i = 0; i < TEST_RUNS; i++){
+	for (size_t i = 0; i < TEST_RUNS_MATH; i++){
 		output << test1_ctrl[i] << "," << test1_sse2[i] << "," << test1_avx2[i] << ","
 				<< test2_ctrl[i] << "," << test2_sse2[i] << "," << test2_avx2[i] << ","
 				<< test3_ctrl[i] << "," << test3_sse2[i] << "," << test3_avx2[i] << ","
