@@ -6,12 +6,9 @@
 #include <stdio.h>
 
 
-#define TEST_RUNS			(100U)			//	100 test runs
-#define TEST_OPS			(100000UL)		//	by 100 000 ops
-
-#define TEST_RUNS_MATH		(10U)			//	10 test runs
-#define TEST_OPS_MATH		(10000000UL)	//	by 10 000 000 ops
-#define TEST_OPS_MATH_RED	(1000000UL)	//	by 1 000 000 ops
+#define TEST_RUNS		(10U)			//	10 test runs
+#define TEST_OPS		(10000000UL)	//	by 10 000 000 ops
+#define TEST_OPS_RED	(1000000UL)		//	by 1 000 000 ops
 
 
 inline void print_hex(const uint8_t str[], size_t size) {
