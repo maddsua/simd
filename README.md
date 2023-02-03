@@ -32,3 +32,14 @@ A bit more diverse test reveals that such a result is also true for other bit op
 <img src="benchmarks-data/benchmark_bitwise_1675444105.png"/>
 
 But anyway, SIMD makes everything run in orders of magnitude faster, so that's cool.
+
+
+# Articles about CPU intrinsics
+
+<https://chryswoods.com/vector_c++/emmintrin.html>
+
+<https://chryswoods.com/vector_c++/immintrin.html>
+
+<https://chryswoods.com/vector_c++/portable.html>
+
+<https://www.codeproject.com/Articles/874396/Crunching-Numbers-with-AVX-and-AVX>
