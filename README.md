@@ -6,6 +6,8 @@ Many developers avoid using SIMD intrinsics, so I'm gonna make some fun tests he
 Note: This test is accurate for comparing a single type of operation to it's SIMD and non-SIMD version.
 So, you can tell that AVX2 version of float matrix test is faster than SSE2, but you can not compare it to big int group, because they invoke completely different operations.
 
+TL:DR AVX2 is ~30% faster for math than SSE2, and ~10X faster than non-SIMD runs
+
 <img src="benchmarks-data/benchmark_arithmetics_1675398239.png"/>
 
 ## XOR
