@@ -43,3 +43,5 @@ But anyway, SIMD makes everything run in orders of magnitude faster, so that's c
 <https://chryswoods.com/vector_c++/portable.html>
 
 <https://www.codeproject.com/Articles/874396/Crunching-Numbers-with-AVX-and-AVX>
+
+<https://acl.inf.ethz.ch/teaching/fastcode/2021/slides/07-simd-avx.pdf>
