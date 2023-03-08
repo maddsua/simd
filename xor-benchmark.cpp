@@ -60,13 +60,13 @@ std::array<uint8_t, BLOCK_SZ> totalxor_sse(const uint8_t* data) {
 }
 
 
-double avgtime(time_t* array, size_t length) {
+time_t avgtime(time_t* array, size_t length) {
 
 	uint64_t temp = 0;
 	for (size_t i = 0; i < length; i++) 
 		temp += array[i];
 	
-	return ((double)(temp / length) / TEST_OPS);
+	return (temp / length);
 }
 
 int main() {
@@ -90,7 +90,7 @@ int main() {
 		test_ctrl[m] = timeGetTime() - timer;
 	}
 
-	std::cout << "Control test ended. AVG: " << avgtime(test_ctrl.data(), TEST_RUNS) << "ms/op\r\n";
+	std::cout << "Control test ended. AVG: " << avgtime(test_ctrl.data(), TEST_RUNS) << "ms/block\r\n";
 
 
 	//	test with sse
@@ -102,7 +102,7 @@ int main() {
 		test_sse[m] = timeGetTime() - timer;
 	}
 
-	std::cout << "SSE test ended. AVG: " << avgtime(test_sse.data(), TEST_RUNS) << "ms/op\r\n";
+	std::cout << "SSE test ended. AVG: " << avgtime(test_sse.data(), TEST_RUNS) << "ms/block\r\n";
 
 
 	//	test with avx2
@@ -114,17 +114,17 @@ int main() {
 		test_avx2[m] = timeGetTime() - timer;
 	}
 
-	std::cout << "AVX2 test ended. AVG: " << avgtime(test_avx2.data(), TEST_RUNS) << "ms/op\r\n";
+	std::cout << "AVX2 test ended. AVG: " << avgtime(test_avx2.data(), TEST_RUNS) << "ms/block\r\n";
 
 	//	save test data
 	std::cout << "\r\nWriting test data to .csv...\r\n";
 	
-	std::string filename = "benchmark_xor_" + std::to_string(time(nullptr)) + ".csv";
+	std::string filename = std::string("benchmarks-data/") + "benchmark_xor_" + std::to_string(time(nullptr)) + ".csv";
 	std::ofstream output(filename, std::ios::out);
 
-	output << "Control;SSE;AVX2;Unit" << "\n";
+	output << "Control,SSE,AVX2,Unit" << "\n";
 	for (size_t i = 0; i < TEST_RUNS; i++){
-		output << test_ctrl[i] << ";" << test_sse[i] << ";" << test_avx2[i] << ";ms/" << TEST_OPS << " ops\n";
+		output << test_ctrl[i] << "," << test_sse[i] << "," << test_avx2[i] << ",ms/" << TEST_OPS << " ops\n";
 	}
 
 	output.close();
