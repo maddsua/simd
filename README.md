@@ -6,7 +6,7 @@ Many developers avoid using SIMD intrinsics, so I'm gonna make some fun tests he
 ### Benchmark
 Benchmark consists of 100 runs of 100 000 XOR ops on 256-bit buffers.
 
-This test was conducted on a single core of AND R5 3600 at stock clock speed.
+This test was conducted on a single core of AMD R5 3600 at stock clock speed.
 
 Without use of any intrinsics it takes ~400ms to complete 100 000 XOR ops.
 
